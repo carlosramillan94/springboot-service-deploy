@@ -12,7 +12,7 @@ galaxy_info:
     versions:
       - 16.04
 
-  galaxy_tags: []
+  galaxy_tags:
     - java
     - systemd
     - springboot
