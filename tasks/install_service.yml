@@ -1,0 +1,96 @@
+---
+- name: "Install_service | Ensure app root folder exist"
+  file:
+    path: "{{ service_root_folder }}/{{ service_name | upper }}"
+    state: directory
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: "Install | Ensure app version folder exist"
+  file:
+    path: "{{ service_root_folder }}/{{ service_name  | upper }}/{{ service_version }}"
+    state: directory
+    owner: "root"
+    group: "root"
+
+- debug: var=service_artifact_file verbosity=1
+
+- debug: var=service_local_maven_artifact_dowload verbosity=1
+
+- name: "Install | Copy application artifact file"
+  copy:
+    src: "{{ service_artifact_file }}"
+    dest: "{{ service_artifact_destination_file }}"
+    owner: "root"
+    group: "root"
+    mode: 0500
+  when: >
+        service_artifact_file is defined
+        service_artifact_file|length > 0
+  notify:
+    - "Restart application"
+
+- name: "Install | Ensure app artifact symlink exist"
+  file:
+    src: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_version }}/{{ service_artifact_id }}-{{ service_version }}.{{ service_extension }}"
+    dest: "{{ service_root_folder }}/{{ same | upper }}/{{ service_name | upper }}"
+    state: link
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
+  when: >
+        use_system_d
+  notify:
+    - "Restart application"
+
+- name: "Install | Source application service conf"
+  template:
+    src: app.conf.j2
+    dest: "{{ service_artifact_destination_path }}/{{ service_name }}-{{ service_version }}.conf"
+    mode: 0400
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
+  notify:
+    - "Restart application"
+
+- name: "Install | Ensure application service conf symlink exist"
+  file:
+    src: "{{ service_artifact_destination_path }}/{{ sb_app_name }}-{{ sb_app_version }}.conf"
+    dest: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_name }}.conf"
+    state: link
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
+  when: >
+        use_system_d
+  notify:
+    - "Restart application"
+
+- debug: var=service_config_file_template_path verbosity=1
+
+- name: "Install | Source application configuration file"
+  template:
+    src: "{{ service_config_file_template_path }}"
+    dest: "{{ service_artifact_destination_path }}/{{ service_config_file_final_name }}"
+    mode: 0644
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
+  when: >
+        service_config_file_template_path is defined
+  notify:
+    - "Restart application"
+
+- name: "Install | Ensure application configuration symlink exist"
+  file:
+    src: "{{ service_artifact_destination_path }}/{{ service_config_file_final_name }}"
+    dest: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_config_file_final_name }}"
+    state: link
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
+  when: >
+        service_config_file_template_path is defined and
+        use_system_d
+  notify:
+    - "Restart application"
+
+- import_tasks: service.yml
+  when: service_as_a_service
