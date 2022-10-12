@@ -7,7 +7,7 @@
 
 - name: Set artifact destination file
   set_fact:
-    sb_app_artifact_destination_file: "{{ service_artifact_destination_folder }}/{{ service_artifact_id }}-{{ service_version }}.{{ service_extension }}"
+    service_artifact_destination_file: "{{ service_artifact_destination_folder }}/{{ service_artifact_id }}-{{ service_version }}.{{ service_extension }}"
 
 - name: " Service | Check if use systemd"
   set_fact: use_system_d={{ ansible_service_mgr == 'systemd' }}
