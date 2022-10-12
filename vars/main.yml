@@ -1,2 +1,4 @@
 ---
 # vars file for springboot-service-deploy
+sysd_user_services_folder: "{{ '/etc/systemd/system' if (ansible_distribution in ['RedHat','CentOS']) else '/etc/systemd/system/' }}"
+sysd_script: "{{ sysd_user_services_folder }}/{{ sb_app_name | lower }}.service"
