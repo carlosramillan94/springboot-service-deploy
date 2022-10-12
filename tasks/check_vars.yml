@@ -5,6 +5,12 @@
       - "service_name is defined"
     msg: "service_name must be defined"
 
+- name: "Check vars | Assert service_version is defined"
+  assert:
+    that:
+      - "service_version is defined"
+    msg: "service_version must be defined"
+
 - name: "Check vars | Assert service_group_id is defined"
   assert:
     that:
@@ -35,8 +41,8 @@
       - "service_user_group is defined"
     msg: "service_user_group must be defined"
 
-- name: "Check vars | Assert sb_maven_repository_url or service_artifact_file is defined"
+- name: "Check vars | Assert service_maven_repository_url or service_artifact_file is defined"
   assert:
     that:
-      - "sb_maven_repository_url is defined or service_artifact_file is defined"
-    msg: "sb_maven_repository_url or service_artifact_file must be defined"
+      - "service_maven_repository_url is defined or service_artifact_file is defined"
+    msg: "service_maven_repository_url or service_artifact_file must be defined"

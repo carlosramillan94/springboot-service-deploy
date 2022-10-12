@@ -1,23 +1,29 @@
 ---
 - import_tasks: check_vars.yml
 
-- name: "Main | Set service destination path"
+- name: Set application destination folder
   set_fact:
-    service_artifact_destination_path: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_version }}"
+    service_artifact_destination_folder: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_version }}"
 
-- name: "Main | Set artifact destination file"
+- name: Set artifact destination file
   set_fact:
-    service_artifact_destination_file: "{{ service_artifact_destination_folder }}/{{ service_artifact_id }}-{{ service_version }}.{{ service_extension}}"
+    sb_app_artifact_destination_file: "{{ service_artifact_destination_folder }}/{{ service_artifact_id }}-{{ service_version }}.{{ service_extension }}"
 
 - name: " Service | Check if use systemd"
-  set_fact:
-    use_system_d={{ ansible_service_mgr == 'systemd' }}
+  set_fact: use_system_d={{ ansible_service_mgr == 'systemd' }}
 
 - debug: var=ansible_distribution_version
+
+#- name: " Service | Check if use use_initd"
+# set_fact: use_initd={{ ansible_service_mgr == 'sysvinit' }}
 
 - import_tasks: install_service.yml
   when: >
     service_state == 'present'
+
+- import_tasks: uninstall.yml
+  when: >
+    service_state == 'absent'
 
 - meta: flush_handlers
 
@@ -27,4 +33,4 @@
     service_healthcheck_urls|length > 0) or
     (service_healthcheck_ports is defined and
     service_healthcheck_ports|length > 0)) and
-    service_state == 'present
+    service_state == 'present'

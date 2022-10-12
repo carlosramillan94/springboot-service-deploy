@@ -7,16 +7,17 @@
     src: app.systemd.service.j2
     dest: "{{ sysd_script }}"
     mode: 0644
-    owner: "root"
-    group: "root"
+    owner: "{{ sb_app_user }}"
+    group: "{{ sb_app_user_group }}"
   when: use_system_d
   become: true
   notify:
     - "Restart application"
 
-- name: "Service | Ensure {{  service_name }} service is started"
+- name: "Service | Ensure {{  sb_app_name }} service is started"
   service:
-    name: "{{  service_name | lower }}"
+    name: "{{  sb_app_name | lower }}"
     enabled: yes
+    daemon_reload: yes
     state: started
   become: true

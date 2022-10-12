@@ -1,32 +1,28 @@
 ---
-- name: "Install_service | Ensure app root folder exist"
+- name: "Install | Ensure app root folder exist"
   file:
     path: "{{ service_root_folder }}/{{ service_name | upper }}"
     state: directory
-    owner: "root"
-    group: "root"
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
   become: true
 
 - name: "Install | Ensure app version folder exist"
   file:
-    path: "{{ service_root_folder }}/{{ service_name  | upper }}/{{ service_version }}"
+    path: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_version }}"
     state: directory
-    owner: "root"
-    group: "root"
-
-- debug: var=service_artifact_file verbosity=1
-
-- debug: var=service_local_maven_artifact_dowload verbosity=1
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
 
 - name: "Install | Copy application artifact file"
   copy:
     src: "{{ service_artifact_file }}"
     dest: "{{ service_artifact_destination_file }}"
-    owner: "root"
-    group: "root"
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
     mode: 0500
   when: >
-        service_artifact_file is defined
+        service_artifact_file is defined and
         service_artifact_file|length > 0
   notify:
     - "Restart application"
@@ -34,7 +30,7 @@
 - name: "Install | Ensure app artifact symlink exist"
   file:
     src: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_version }}/{{ service_artifact_id }}-{{ service_version }}.{{ service_extension }}"
-    dest: "{{ service_root_folder }}/{{ same | upper }}/{{ service_name | upper }}"
+    dest: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_name | upper }}"
     state: link
     owner: "{{ service_user }}"
     group: "{{ service_user_group }}"
@@ -46,7 +42,7 @@
 - name: "Install | Source application service conf"
   template:
     src: app.conf.j2
-    dest: "{{ service_artifact_destination_path }}/{{ service_name }}-{{ service_version }}.conf"
+    dest: "{{ service_artifact_destination_folder }}/{{ service_name }}-{{ service_version }}.conf"
     mode: 0400
     owner: "{{ service_user }}"
     group: "{{ service_user_group }}"
@@ -55,7 +51,7 @@
 
 - name: "Install | Ensure application service conf symlink exist"
   file:
-    src: "{{ service_artifact_destination_path }}/{{ sb_app_name }}-{{ sb_app_version }}.conf"
+    src: "{{ service_artifact_destination_folder }}/{{ service_name }}-{{ service_version }}.conf"
     dest: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_name }}.conf"
     state: link
     owner: "{{ service_user }}"
@@ -70,7 +66,7 @@
 - name: "Install | Source application configuration file"
   template:
     src: "{{ service_config_file_template_path }}"
-    dest: "{{ service_artifact_destination_path }}/{{ service_config_file_final_name }}"
+    dest: "{{ service_artifact_destination_folder }}/{{ service_config_file_final_name }}"
     mode: 0644
     owner: "{{ service_user }}"
     group: "{{ service_user_group }}"
@@ -81,7 +77,7 @@
 
 - name: "Install | Ensure application configuration symlink exist"
   file:
-    src: "{{ service_artifact_destination_path }}/{{ service_config_file_final_name }}"
+    src: "{{ service_artifact_destination_folder }}/{{ service_config_file_final_name }}"
     dest: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_config_file_final_name }}"
     state: link
     owner: "{{ service_user }}"
@@ -92,5 +88,30 @@
   notify:
     - "Restart application"
 
-- import_tasks: service.yml
+- name: "Install | Source application logback file"
+  template:
+    src: "{{ service_logback_file_template_path }}"
+    dest: "{{ service_artifact_destination_folder }}/logback-spring.xml"
+    mode: 0644
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
+  when: >
+        service_logback_file_template_path is defined
+  notify:
+    - "Restart application"
+
+- name: "Install | Ensure application logback symlink exist"
+  file:
+    src: "{{ service_artifact_destination_folder }}/logback-spring.xml"
+    dest: "{{ servicelications_root_folder }}/{{ service_name | upper }}/logback-spring.xml"
+    state: link
+    owner: "{{ service_user }}"
+    group: "{{ service_user_group }}"
+  when: >
+        service_logback_file_template_path is defined and
+        use_system_d
+  notify:
+    - "Restart application"
+
+- import_tasks: services.yml
   when: service_as_a_service

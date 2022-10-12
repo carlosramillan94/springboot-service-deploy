@@ -1,2 +1,34 @@
 ---
-# defaults file for springboot-service-deploy
+# dependencies default var
+
+service_install_java: true
+service_create_users: true
+service_java_package: "{{ 'java-1.8.0-openjdk' if (ansible_distribution in ['RedHat','CentOS']) else 'openjdk-8-jdk' }}"
+service_user: root
+service_user_group: root
+service_state: present
+service_extension: jar
+service_maven_repository_url: http://repositorio.maven.org/maven2
+service_root_folder: /opt/microservices
+service_as_a_service: true
+service_stop_wait_time: 60
+# download maven artifact on ansible host
+service_local_maven_artifact_dowload: true
+service_local_maven_artifact_download_temp_folder: /tmp
+service_app_java_opts_xms: 256M
+service_java_opts_xmx: 1024M
+service_config_file_final_name: application.yml
+
+# initd conf
+service_initd_pid_folder: "{{ service_root_folder }}/{{ service_name | upper }}/run"
+service_initd_log_folder: "{{ service_root_folder }}/{{ service_name | upper }}/logs"
+service_initd_log_filename: "{{ service_name }}_out.log"
+
+service_healthcheck_urls_validate_certs: no
+service_healthcheck_urls_retry_count: 10
+service_healthcheck_urls_retry_delay: 6
+
+# HealthCheck TCP Port timeout in seconds
+service_healthcheck_ports_timeout: 60
+
+service_env: []
