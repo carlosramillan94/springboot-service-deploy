@@ -8,7 +8,7 @@
     dest: "{{ sysd_script }}"
     mode: 0644
     owner: "{{ service_user }}"
-    group: "{{ service_group }}"
+    group: "{{  service_user_group }}"
   when: use_system_d
   become: true
   notify:
