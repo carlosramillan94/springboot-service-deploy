@@ -29,7 +29,7 @@
 
 - name: "Install | Ensure app artifact symlink exist"
   file:
-    src: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_version }}/{{ service_artifact_id }}-{{ service_version }}.{{ service_extension }}"
+    src: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_version }}/{{ service_name }}-{{ service_version }}.{{ service_extension }}"
     dest: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_name | upper }}"
     state: link
     owner: "{{ service_user }}"

@@ -11,12 +11,6 @@
       - "service_version is defined"
     msg: "service_version must be defined"
 
-- name: "Check vars | Assert service_artifact_id is defined"
-  assert:
-    that:
-      - "service_artifact_id is defined"
-    msg: "service_artifact_id must be defined"
-
 - name: "Check vars | Assert service_version is defined"
   assert:
     that:
