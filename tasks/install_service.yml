@@ -39,18 +39,6 @@
   notify:
     - "Restart application"
 
-- name: "Install | Ensure application service conf symlink exist"
-  file:
-    src: "{{ service_artifact_destination_folder }}/{{ service_name }}-{{ service_version }}.conf"
-    dest: "{{ service_root_folder }}/{{ service_name | upper }}/{{ service_name }}.conf"
-    state: link
-    owner: "{{ service_user }}"
-    group: "{{ service_user_group }}"
-  when: >
-        use_system_d
-  notify:
-    - "Restart application"
-
 - debug: var=service_config_file_template_path verbosity=1
 
 - name: "Install | Source application configuration file"
