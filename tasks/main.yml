@@ -21,10 +21,6 @@
   when: >
     service_state == 'present'
 
-- import_tasks: uninstall.yml
-  when: >
-    service_state == 'absent'
-
 - meta: flush_handlers
 
 - import_tasks: healthcheck.yml
