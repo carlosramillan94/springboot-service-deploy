@@ -4,7 +4,6 @@ Description={{ service_name | upper }}
 After=network.target
 
 [Service]
-EnvironmentFile={{ service_root_folder }}/{{ service_name | upper }}/{{ service_name }}.conf
 ExecStart=/bin/sh -c "exec java -Duser.timezone=EST -jar {{ service_root_folder }}/{{ service_name | upper }}/{{ service_name | upper }} --spring.config.location=file:{{ service_root_folder }}/{{ service_name | upper }}/application.yml"
 Restart=always
 WorkingDirectory= {{ service_root_folder }}/{{ service_name | upper }}

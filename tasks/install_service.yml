@@ -39,16 +39,6 @@
   notify:
     - "Restart application"
 
-- name: "Install | Source application service conf"
-  template:
-    src: app.conf.j2
-    dest: "{{ service_artifact_destination_folder }}/{{ service_name }}-{{ service_version }}.conf"
-    mode: 0400
-    owner: "{{ service_user }}"
-    group: "{{ service_user_group }}"
-  notify:
-    - "Restart application"
-
 - name: "Install | Ensure application service conf symlink exist"
   file:
     src: "{{ service_artifact_destination_folder }}/{{ service_name }}-{{ service_version }}.conf"
